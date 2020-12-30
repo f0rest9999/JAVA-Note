@@ -3,7 +3,7 @@
 ### 概览
 
 ```
-
+容器主要包括 Collection 和 Map 两种，Collection 存储着对象的集合，而 Map 存储着键值对（两个对象）的映射表。
 ```
 
 ###Collections
@@ -434,4 +434,35 @@ public class ArrayList<E> extends AbstractList<E>
       ![image-20201230124600512](https://gitee.com/f0rest9999/images/raw/master/20201230124607.png)
 
       - 红黑树情况下，类似于链表的操作
+
+####LinkedHashMap
+
+- 继承自 HashMap，因此具有和 HashMap 一样的快速查找特性。
+
+- 内部维护了一个双向链表，用来维护插入顺序或者 LRU 顺序。
+
+  ![image-20201230133129379](https://gitee.com/f0rest9999/images/raw/master/20201230133129.png)
+
+- `accessOrder` 决定了顺序，==默认为 false，此时维护的是插入顺序==。如果是true，则要按照LRU访问顺序来维护Node（也就是插入和访问都会将当前节点放置到尾部，尾部代表的是最近访问的数据）。
+
+  ![image-20201230133330483](https://gitee.com/f0rest9999/images/raw/master/20201230133330.png)
+
+- ==`LinkedHashMap` 最重要的是以下用于维护顺序的函数，它们会在 put、get 等方法中调用。==
+
+  ```java
+  void afterNodeAccess(Node<K,V> p) { }
+  void afterNodeInsertion(boolean evict) { }
+  ```
+
+  - 当一个节点被访问时，如果 `accessOrder` 为 true，则会将该节点移到链表尾部。也就是说指定为 LRU 顺序之后，在每次访问一个节点时，会将这个节点移到链表尾部，保证链表尾部是最近访问的节点，那么链表首部就是最近最久未使用的节点。
+
+  ![image-20201230133626189](https://gitee.com/f0rest9999/images/raw/master/20201230133626.png)
+
+  - 在 put 等操作之后执行，当 `removeEldestEntry() `方法返回 true 时会移除最晚的节点，也就是链表首部节点 first。
+
+    evict 只有在构建 Map 的时候才为 false，在这里为 true。
+
+    ![image-20201230133718507](https://gitee.com/f0rest9999/images/raw/master/20201230133718.png)
+
+
 
